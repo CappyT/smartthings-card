@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 /*
  * SmartThings laundry card: Samsung washer and dryer (DA_WM_TP2_20_COMMON)
  * exposed by the SmartThings integration. Tile on the dashboard, more-info

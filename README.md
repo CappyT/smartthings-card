@@ -33,3 +33,7 @@ name: Lavatrice # optional
 python3 -m http.server 8765 --bind 127.0.0.1
 # open http://127.0.0.1:8765/dev/harness.html
 ```
+
+## License
+
+GNU Lesser General Public License v3.0 or later. See `COPYING.LESSER` and `COPYING`.
