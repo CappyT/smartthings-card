@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>
+html{--primary-text-color:#e1e1e1;--secondary-text-color:#9b9b9b;--card-background-color:#1c1c1c;--divider-color:rgba(225,225,225,.12);--primary-color:#9c27b0}
+body{background:#111;font-family:Roboto,sans-serif;padding:16px;display:grid;grid-template-columns:repeat(2,300px);gap:12px}
+ha-card{display:block;background:var(--card-background-color);border-radius:12px;border:1px solid var(--divider-color);height:64px}
+</style>
+<script>
+customElements.define("ha-card", class extends HTMLElement{});
+const MAP={"mdi:washing-machine":"W","mdi:tumble-dryer":"D","mdi:play":"▶","mdi:pause":"⏸","mdi:stop":"■","mdi:close":"✕","mdi:cog-outline":"⚙","mdi:chevron-down":"⌄","mdi:minus":"−","mdi:plus":"+","mdi:check":"✓"};
+customElements.define("ha-icon", class extends HTMLElement{connectedCallback(){this.style.cssText+="width:24px;height:24px;display:inline-grid;place-items:center;font-size:14px";this.textContent=MAP[this.getAttribute("icon")]||"●"}});
+</script>
+<script type="module" src="../smartthings-laundry-card.js"></script>
+</head><body>
+<div id="w"></div><div id="d"></div><div id="w2"></div>
+<script type="module">
+const now=Date.now();
+function st(id,state,attrs={}){return {entity_id:id,state,attributes:attrs}}
+const S={}, E={};
+function add(dev,id,tk,state,attrs){S[id]=st(id,state,attrs);E[id]={entity_id:id,device_id:dev,platform:"smartthings",translation_key:tk}}
+add("W","sensor.w_ms","washer_machine_state","run");add("W","sensor.w_js","washer_job_state","rinse");
+add("W","sensor.w_ct","completion_time",new Date(now+83*60000).toISOString());
+add("W","select.w_op","operating_state","run",{options:["run","pause","stop"]});
+add("W","select.w_cy","washer_cycle","cotton",{options:["cotton","eco_40_60","super_speed","quick_wash","intense_cold","hygiene_steam","colors","wool","outdoor","bedding","synthetics","delicates","rinse_spin","drain_spin","jeans","silent_wash","baby_care","sportswear","cloudy_day","shirts","towels","mixed_load","drum_clean"]});
+add("W","select.w_t","water_temperature","40",{options:["cold","20","30","40","60","90"]});
+add("W","select.w_s","spin_level","1200",{options:["no_spin","400","800","1000","1200","1400"]});
+add("W","number.w_r","washer_rinse_cycles","2",{min:0,max:5,step:1});
+add("W","number.w_de","delay_end","0",{min:0,max:1440,step:1});
+add("W","switch.w_b","bubble_soak","off");
+add("W","select.w_da","detergent_amount","standard",{options:["none","less","standard","extra"]});
+add("W","binary_sensor.w_rc","remote_control","on");add("W","sensor.w_dl","detergent_level","less");add("W","sensor.w_sl","softener_level","normal");
+add("D","sensor.d_ms","dryer_machine_state","stop");add("D","sensor.d_js","dryer_job_state","none");
+add("D","select.d_op","operating_state","stop",{options:["run","pause","stop"]});
+add("D","select.d_cy","dryer_cycle","cotton",{options:["cotton","synthetics","mixed_load","towels","bedding","time_dry"]});
+add("D","select.d_dl","dry_level","normal",{options:["damp","less","normal","more"]});
+add("D","select.d_dt","drying_time","0",{options:["0"]});
+add("D","number.d_de","delay_end","120",{min:0,max:1440,step:1});
+add("D","switch.d_wp","wrinkle_prevent","on");add("D","switch.d_acl","auto_cycle_link","off");
+add("D","binary_sensor.d_rc","remote_control","off");
+const hass={states:S,entities:E,devices:{W:{name:"Lavatrice"},D:{name:"Asciugatrice"}},language:"it",locale:{language:"it"},
+ formatEntityState:(s,v)=>(v??s.state).replace(/_/g," "),
+ callService:async(d,sv,data)=>{console.log("CALL",d,sv,JSON.stringify(data)); if(data.entity_id==="select.d_op") throw new Error("Can only be updated when remote control is enabled");
+   const s=S[data.entity_id]; if(sv==="select_option") s.state=data.option; if(sv==="set_value") s.state=String(data.value); if(sv==="toggle") s.state=s.state==="on"?"off":"on";
+   if(data.entity_id==="select.w_op") S["sensor.w_ms"].state=data.option;
+   const h={...hass,states:{...S}}; window.cards.forEach(c=>c.hass=h);}};
+await customElements.whenDefined("smartthings-laundry-card");
+window.cards=[];
+for (const [el,dev] of [["w","W"],["d","D"]]) {const c=document.createElement("smartthings-laundry-card");c.setConfig({device_id:dev});c.hass=hass;document.getElementById(el).appendChild(c);cards.push(c);}
+</script></body></html>
