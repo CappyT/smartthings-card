@@ -10,7 +10,20 @@ Lovelace card for the Samsung washer and dryer (`DA_WM_TP2_20_COMMON`) exposed b
 
 The card finds the entities of the device by `translation_key`, so it does not depend on entity IDs. It needs the SmartThings integration with the washer and dryer entities (cycle selects, delay end, dispense amounts). The accent color is the theme `--primary-color`.
 
+![Washer and dryer tiles](https://raw.githubusercontent.com/CappyT/smartthings-card/main/images/tiles.png)
+
+![Washer dialog](https://raw.githubusercontent.com/CappyT/smartthings-card/main/images/dialog.png)
+
 ## Install
+
+### HACS
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=CappyT&repository=smartthings-card&category=plugin)
+
+1. Open the link above, or search "SmartThings laundry card" in HACS. If HACS does not find it, add `https://github.com/CappyT/smartthings-card` as a custom repository of type Dashboard.
+2. Download the card. HACS adds the dashboard resource.
+
+### Manual
 
 1. Copy `smartthings-laundry-card.js` to `/config/www/smartthings-laundry-card/`.
 2. Add a dashboard resource: URL `/local/smartthings-laundry-card/smartthings-laundry-card.js?v=<n>`, type JavaScript module. Increase `v` after each update to bypass the frontend cache.
