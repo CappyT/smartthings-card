@@ -9,7 +9,7 @@
  *   name: Lavatrice               # optional
  */
 
-const VERSION = "1.1.1";
+const VERSION = "1.1.2";
 
 // Entities are found by translation_key, entity_ids differ per device.
 const ROLES = {
